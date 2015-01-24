@@ -8,91 +8,23 @@
         <meta name="author" content="Luís Almeida">
         <meta name="viewport" content="width=device-width">
         <title>jQuery Unveil - A very lightweight plugin to lazy load images</title>
+		<link rel="stylesheet" href="assets/unveil.css">
+		
+	    <script src="assets/jquery-1.11.2.min.js"></script>
+	    <script src="jquery.unveil.min.js"></script>
+
+	    <script>
+	    $(function() {
+	        $("img.lazyload").unveil({
+	        	threshold: 50,
+				src: true,
+				callback: function() {
+					$(this).removeClass('unveil');
+				}
+	        });
+	    });
+	    </script>
     </head>
-
-    <style>
-
-    body {
-        background: #FFF;
-        color: #555;
-        font-family: "Helvetica Neue", sans-serif;
-        font-weight: 300;
-        line-height: 1.7;
-        padding: 30px 30px 300px 30px;
-        margin: 0 auto;
-        max-width: 480px;
-    }
-    header {
-        margin: 100px 0;
-    }
-    header p {
-        color: #CCC;
-        margin: 0 0 25px 0;
-    }
-    header h1 {
-        color: #000;
-        font-size: 75px;
-        line-height: 1;
-        margin: 0 0 10px 0;
-    }
-    header h1 small{
-        font-size: 16px;
-    }
-    h2 {
-        color: #333;
-        margin-top: 100px;
-        font-size: 1em;
-    }
-    p {
-        margin: 15px auto;
-    }
-    a {
-        color: #3595b5;
-    }
-    strong {
-        font-size: 1.5em;
-        color: #CCC;
-    }
-    code {
-    }
-    code > span.red {
-        color: #D14;
-    }
-    code > span.blue {
-        color: #099;
-    }
-    code > span.purple {
-        color: #C0C;
-    }
-    ul {
-        list-style: none;
-        padding: 0;
-    }
-    ul > li {
-        margin-top: 50px;
-        text-align: center;
-    }
-    ul > li > img {
-        display: inline-block;
-        max-width: 100%;
-    }
-
-    .twitter-share-button {
-        margin-left: 20px;
-    }
-
-    </style>
-
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="jquery-1.9.1.min.js"><\/script>')</script>
-    <script src="jquery.unveil.js"></script>
-
-    <script>
-    $(function() {
-        $("li img").unveil(300);
-    });
-    </script>
-
     <body>
 
     <header>
@@ -101,7 +33,6 @@
 
         <iframe src="http://ghbtns.com/github-btn.html?user=luis-almeida&repo=unveil&type=watch" allowtransparency="true" frameborder="0" scrolling="0" width="55" height="20"></iframe>
         <iframe src="http://ghbtns.com/github-btn.html?user=luis-almeida&repo=unveil&type=fork" allowtransparency="true" frameborder="0" scrolling="0" width="55" height="20"></iframe>
-        <a href="https://twitter.com/share" class="twitter-share-button" data-text="unveil.js - A very lightweight plugin to lazy load images" data-via="lmgalmeida" data-related="lmgalmeida" data-count="none">Tweet</a>
     </header>
 
     <p>Most of us are familiar with the <a target="_blank" href="http://www.appelsiini.net/projects/lazyload">Lazy Load</a> plugin by <a target="_blank" href="http://www.appelsiini.net/">Mika Tuupola</a>.
@@ -131,7 +62,7 @@
     <code>$(<span class="red">"img"</span>).unveil(<span class="purple">200</span>);</code>
 
     <h2>Callback</h2>
-    <p>As a second parameter you can also specify a callback function that will fire after an image as been "unveiled".</p>
+    <p>As a second parameter you can also specify a callback function that will fire after an image has been "unveiled".</p>
     <p>Inside the callback function <code>this</code> refers to the image's DOM node, so with the help of CSS3 (or jQuery animations) and by attaching a simple load event you can easily add some fancy entrance animation to your images:</p>
     <code><span class="blue">img</span> {<br>
     &nbsp;&nbsp;opacity: 0;<br>
@@ -149,23 +80,32 @@
     <p>All you have to do is select the images you want to "unveil" and trigger the event:</p>
     <code>$(<span class="red">"img"</span>).trigger(<span class="red">"unveil"</span>);</code>
 
+    <h2>Lookup</h2>
+    <p>It is also possible to lookup for images in the viewport that haven't been "unveiled" yet.</p>
+    <p>This can be useful, for instance, in case of a tabbed layout.</p>
+    <code>$(<span class="blue">window</span>).trigger(<span class="red">"lookup"</span>);</code>
+
+    <h2>Cancel</h2>
+    <p>You can remove all the "unveil" event handlers from "window":</p>
+    <code>$(<span class="blue">window</span>).off(<span class="red">"unveil"</span>);</code>
+
     <h2>Demo</h2>
     <p>The images were taken from the The Fox is Black <a href="http://www.thefoxisblack.com/category/the-desktop-wallpaper-project/">Desktop Wallpaper Project</a> - cool stuff!</p>
     <p>If you're on a "normal" display, unveil will load the low resolution version (800x500). In case you're on a device with a retina display, the high resolution version (1280x800 in this case) will be loaded instead.</p>
     <p>Scroll down to see it working.</p>
 
     <ul>
-        <li><img src="img/loader.gif" data-src="img/anti-bullying-tom-froese-wallpaper-800x500.jpg" data-src-retina="img/anti-bullying-tom-froese-wallpaper-1280x800.jpg" /></li>
-        <li><img src="img/loader.gif" data-src="img/brock-davis-wallpaper-800x500.jpg" data-src-retina="img/brock-davis-wallpaper-1280x800.jpg" /></li>
-        <li><img src="img/loader.gif" data-src="img/dark-igloo-wallpaper-800x500.jpg" data-src-retina="img/dark-igloo-wallpaper-800x500.jpg" /></li>
-        <li><img src="img/loader.gif" data-src="img/dark-igloo-wallpaper-1-800x500.jpg" data-src-retina="img/dark-igloo-wallpaper-1-800x500.jpg" /></li>
-        <li><img src="img/loader.gif" data-src="img/iceland-smojr-wallpaper-800x500.jpg" data-src-retina="img/iceland-smjor-wallpaper-1280x800.jpg" /></li>
-        <li><img src="img/loader.gif" data-src="img/james-olstein-wallpaper-800x500.jpg" data-src-retina="img/james-olstein-wallpaper-1280x800.jpg" /></li>
-        <li><img src="img/loader.gif" data-src="img/johanna-basford-wallpaper-800x500.jpg" data-src-retina="img/johanna-basford-wallpaper-1280x800.jpg" /></li>
-        <li><img src="img/loader.gif" data-src="img/Jude_Landry_Wallpaper_800x500.jpg" data-src-retina="img/Jude_Landry_Wallpaper_1280x800.jpg" /></li>
-        <li><img src="img/loader.gif" data-src="img/julieta-felix-wallpaper-800x500.jpg" data-src-retina="img/julieta-felix-wallpaper-1280x800.jpg" /></li>
-        <li><img src="img/loader.gif" data-src="img/Timothy-J-Reynolds-wallpaper-800x500.jpg" data-src-retina="img/Timothy-J-Reynolds-wallpaper-1280x800.jpg" /></li>
-        <li><img src="img/loader.gif" data-src="img/haik-avanian-wallpaper-800x500.jpg" data-src-retina="img/haik-avanian-wallpaper-1280x800.jpg" /></li>
+        <li><img class="lazyload unveil" src="img/anti-bullying-tom-froese-wallpaper-800x500.jpg" data-src-retina="img/anti-bullying-tom-froese-wallpaper-1280x800.jpg" width="800" height="500" /></li>
+        <li><img class="lazyload unveil" src="img/brock-davis-wallpaper-800x500.jpg" data-src-retina="img/brock-davis-wallpaper-1280x800.jpg" width="800" height="500" /></li>
+        <li><img class="lazyload unveil" src="img/dark-igloo-wallpaper-800x500.jpg" data-src-retina="img/dark-igloo-wallpaper-800x500.jpg" width="800" height="500" /></li>
+        <li><img class="lazyload unveil" src="img/dark-igloo-wallpaper-1-800x500.jpg" data-src-retina="img/dark-igloo-wallpaper-1-800x500.jpg" width="800" height="500" /></li>
+        <li><img class="lazyload unveil" src="img/iceland-smojr-wallpaper-800x500.jpg" data-src-retina="img/iceland-smjor-wallpaper-1280x800.jpg" width="800" height="500" /></li>
+        <li><img class="lazyload unveil" src="img/james-olstein-wallpaper-800x500.jpg" data-src-retina="img/james-olstein-wallpaper-1280x800.jpg" width="800" height="500" /></li>
+        <li><img class="lazyload unveil" src="img/johanna-basford-wallpaper-800x500.jpg" data-src-retina="img/johanna-basford-wallpaper-1280x800.jpg" width="800" height="500" /></li>
+        <li><img class="lazyload unveil" src="img/Jude_Landry_Wallpaper_800x500.jpg" data-src-retina="img/Jude_Landry_Wallpaper_1280x800.jpg" width="800" height="500" /></li>
+        <li><img class="lazyload unveil" src="img/julieta-felix-wallpaper-800x500.jpg" data-src-retina="img/julieta-felix-wallpaper-1280x800.jpg" width="800" height="500" /></li>
+        <li><img class="lazyload unveil" src="img/Timothy-J-Reynolds-wallpaper-800x500.jpg" data-src-retina="img/Timothy-J-Reynolds-wallpaper-1280x800.jpg" width="800" height="500" /></li>
+        <li><img class="lazyload unveil" src="img/haik-avanian-wallpaper-800x500.jpg" data-src-retina="img/haik-avanian-wallpaper-1280x800.jpg" width="800" height="500" /></li>
     </ul>
 
     <h2>Browser support</h2>
@@ -177,24 +117,6 @@
 
     <h2>License</h2>
     <p>Unveil is licensed under the <a href="http://opensource.org/licenses/MIT">MIT license</a>.</p>
-
-    <script>
-    // Twitter
-    !function(d,s,id){
-        var js,fjs=d.getElementsByTagName(s)[0];
-        if(!d.getElementById(id)){
-            js=d.createElement(s);
-            js.id=id;
-            js.src="//platform.twitter.com/widgets.js";
-            fjs.parentNode.insertBefore(js,fjs);
-        }
-    }(document,"script","twitter-wjs");
-    // Analytics
-    var _gaq=[['_setAccount','UA-30936310-1'],['_trackPageview']];
-    (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-    g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-    s.parentNode.insertBefore(g,s)}(document,'script'));
-    </script>
 
     </body>
 </html>
