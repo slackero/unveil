@@ -1,56 +1,104 @@
-/**
+/*!
  * jQuery Unveil
  * A very lightweight jQuery plugin to lazy load images
- * http://luis-almeida.github.com/unveil
+ * http://github.com/luis-almeida/unveil
  *
  * Licensed under the MIT license.
  * Copyright 2013 Luís Almeida
  * https://github.com/luis-almeida
+ *
+ * Extended 2015 by Oliver Georgi
+ * http://github.com/slackero
+ * - Use options to init unveil({})
+ * - src can be used to unveil images
  */
 
-;(function($) {
+;
+(function($) {
 
-  $.fn.unveil = function(threshold, callback) {
+    $.fn.unveil = function(options) {
 
-    var $w = $(window),
-        th = threshold || 0,
-        retina = window.devicePixelRatio > 1,
-        attrib = retina? "data-src-retina" : "data-src",
-        images = this,
-        loaded;
+        var $w = $(window),
+            retina = window.devicePixelRatio > 1,
+            attrib = retina ? "data-src-retina" : "data-src",
+            images = this,
+            loaded,
+            settings = {
+                threshold: 0,
+                src: false,
+                callback: null,
+                placeholder: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7", // transparent GIF image
+                autoheight: true
+            };
 
-    this.one("unveil", function() {
-      var source = this.getAttribute(attrib);
-      source = source || this.getAttribute("data-src");
-      if (source) {
-        this.setAttribute("src", source);
-        if (typeof callback === "function") callback.call(this);
-      }
-    });
+        if (options) {
+            $.extend(settings, options);
 
-    function unveil() {
-      var inview = images.filter(function() {
-        var $e = $(this);
-        if ($e.is(":hidden")) return;
+            if (settings.src && settings.placeholder) {
+                this.each(unveil_placeholder);
+            }
+        }
 
-        var wt = $w.scrollTop(),
-            wb = wt + $w.height(),
-            et = $e.offset().top,
-            eb = et + $e.height();
+        this.one("unveil", function() {
+            var source = this.getAttribute(attrib);
+            source = source || this.getAttribute("data-src");
+            if (source) {
+                this.setAttribute("src", source);
+                if (settings.src && settings.autoheight) {
+                    var restore = this.getAttribute('data-unveil-placeholder');
+                    if (restore !== null) {
+                        this.style.maxHeight = restore;
+                        this.removeAttribute('data-unveil-placeholder');
+                    }
+                }
+                if (typeof settings.callback === "function") {
+                    settings.callback.call(this);
+                }
+            }
+        });
 
-        return eb >= wt - th && et <= wb + th;
-      });
+        function unveil_placeholder() {
+            var imgsrc = this.getAttribute('src');
+            this.setAttribute("data-src", imgsrc);
+            this.setAttribute("src", settings.placeholder);
+            if (settings.autoheight) {
+                var srcwidth = this.getAttribute('width'),
+                    srcheight = this.getAttribute('height');
+                if (srcwidth && srcheight) {
+                    var $this = $(this);
+                    var curwidth = $this.width();
+                    if (curwidth) {
+                        this.setAttribute('data-unveil-placeholder', $this.css('max-height')); // store for resetting
+                        $this.css('max-height', srcheight * curwidth / srcwidth);
+                    }
+                }
+            }
+        }
 
-      loaded = inview.trigger("unveil");
-      images = images.not(loaded);
-    }
+        function unveil() {
+            var inview = images.filter(function() {
+                var $e = $(this);
+                if ($e.is(":hidden")) {
+                    return;
+                }
+                var wt = $w.scrollTop(),
+                    wb = wt + $w.height(),
+                    et = $e.offset().top,
+                    eb = et + $e.height();
 
-    $w.on("scroll.unveil resize.unveil lookup.unveil", unveil);
+                return eb >= wt - settings.threshold && et <= wb + settings.threshold;
+            });
 
-    unveil();
+            loaded = inview.trigger("unveil");
+            images = images.not(loaded);
+        }
 
-    return this;
+        $w.on("scroll.unveil resize.unveil lookup.unveil", unveil);
 
-  };
+        unveil();
+
+        return this;
+
+    };
 
 })(window.jQuery || window.Zepto);
