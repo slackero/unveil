@@ -13,8 +13,7 @@
  * - src can be used to unveil images
  */
 
-;
-(function($) {
+;(function($) {
 
     $.fn.unveil = function(options) {
 
@@ -33,10 +32,6 @@
 
         if (options) {
             $.extend(settings, options);
-
-            if (settings.src && settings.placeholder) {
-                this.each(unveil_placeholder);
-            }
         }
 
         this.one("unveil", function() {
@@ -91,6 +86,10 @@
 
             loaded = inview.trigger("unveil");
             images = images.not(loaded);
+        }
+
+        if (settings.src && settings.placeholder) {
+            this.each(unveil_placeholder);
         }
 
         $w.on("scroll.unveil resize.unveil lookup.unveil", unveil);
